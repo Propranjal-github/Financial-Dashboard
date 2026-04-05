@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Analytics — Finance Dashboard{% endblock %}
+
+{% block content %}
+<h4 class="mb-4">Financial Analysis</h4>
+
+<!-- Mode Selector -->
+<div class="card stat-card mb-4">
+    <div class="card-body py-3">
+        <form method="get" id="analyticsForm">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label small">Analysis Type</label>
+                    <select name="type" id="analysisType" class="form-select form-select-sm"
+                            onchange="toggleFields()">
+                        <option value="daily" {% if mode == 'daily' %}selected{% endif %}>Daily</option>
+                        <option value="monthly" {% if mode == 'monthly' %}selected{% endif %}>Monthly</option>
+                        <option value="yearly" {% if mode == 'yearly' %}selected{% endif %}>Yearly</option>
+                        <option value="custom" {% if mode == 'custom' %}selected{% endif %}>Custom Range</option>
+                    </select>
+                </div>
+                <div class="col-md-2 field-daily">
+                    <label class="form-label small">Date</label>
+                    <input type="date" name="date" class="form-control form-control-sm"
+                           value="{{ params.date|default:'' }}">
+                </div>
+                <div class="col-md-2 field-monthly">
+                    <label class="form-label small">Month</label>
+                    <input type="month" name="month" class="form-control form-control-sm"
+                           value="{{ params.month|default:'' }}">
+                </div>
+                <div class="col-md-2 field-yearly">
+                    <label class="form-label small">Year</label>
+                    <input type="number" name="year" class="form-control form-control-sm"
+                           value="{{ params.year|default:'' }}" min="2000" max="2100" placeholder="2026">
+                </div>
+                <div class="col-md-2 field-custom">
+                    <label class="form-label small">Start Date</label>
+                    <input type="date" name="start_date" class="form-control form-control-sm"
+                           value="{{ params.start_date|default:'' }}">
+                </div>
+                <div class="col-md-2 field-custom">
+                    <label class="form-label small">End Date</label>
+                    <input type="date" name="end_date" class="form-control form-control-sm"
+                           value="{{ params.end_date|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Analyze</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+{% if data %}
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="card-body text-center py-2">
+                <div class="text-muted small">Period</div>
+                <div class="fw-bold">{{ data.period }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="card-body text-center py-2">
+                <div class="text-muted small">Income</div>
+                <div class="stat-value text-success" style="font-size:1.3rem">${{ data.total_income|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="card-body text-center py-2">
+                <div class="text-muted small">Expense</div>
+                <div class="stat-value text-danger" style="font-size:1.3rem">${{ data.total_expense|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="card-body text-center py-2">
+                <div class="text-muted small">Net Balance</div>
+                <div class="stat-value text-primary" style="font-size:1.3rem">${{ data.net_balance|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="card-body text-center py-2">
+                <div class="text-muted small">Records</div>
+                <div class="stat-value" style="font-size:1.3rem">{{ data.record_count }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown & Top Expenses -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <h6 class="mb-3">Category Breakdown</h6>
+                {% if data.category_breakdown %}
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Category</th><th class="text-end">Total</th><th class="text-end">Count</th></tr></thead>
+                    <tbody>
+                    {% for item in data.category_breakdown %}
+                    <tr>
+                        <td>{{ item.category }}</td>
+                        <td class="text-end">${{ item.total|floatformat:2 }}</td>
+                        <td class="text-end">{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No data for this period.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <h6 class="mb-3">Top 5 Expense Categories</h6>
+                {% if data.top_expense_categories %}
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Category</th><th class="text-end">Total Expense</th></tr></thead>
+                    <tbody>
+                    {% for item in data.top_expense_categories %}
+                    <tr>
+                        <td>{{ item.category }}</td>
+                        <td class="text-end text-danger">${{ item.total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No expense data for this period.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Trend Data -->
+{% if data.daily_trend %}
+<div class="card stat-card mb-4">
+    <div class="card-body">
+        <h6 class="mb-3">Daily Trend</h6>
+        <table class="table table-sm mb-0">
+            <thead><tr><th>Date</th><th class="text-end">Income</th><th class="text-end">Expense</th></tr></thead>
+            <tbody>
+            {% for entry in data.daily_trend %}
+            <tr>
+                <td>{{ entry.day }}</td>
+                <td class="text-end text-success">${{ entry.income|floatformat:2 }}</td>
+                <td class="text-end text-danger">${{ entry.expense|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if data.monthly_trend %}
+<div class="card stat-card mb-4">
+    <div class="card-body">
+        <h6 class="mb-3">Monthly Trend</h6>
+        <table class="table table-sm mb-0">
+            <thead><tr><th>Month</th><th class="text-end">Income</th><th class="text-end">Expense</th></tr></thead>
+            <tbody>
+            {% for entry in data.monthly_trend %}
+            <tr>
+                <td>{{ entry.month }}</td>
+                <td class="text-end text-success">${{ entry.income|floatformat:2 }}</td>
+                <td class="text-end text-danger">${{ entry.expense|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFields() {
+    const type = document.getElementById('analysisType').value;
+    document.querySelectorAll('.field-daily, .field-monthly, .field-yearly, .field-custom')
+        .forEach(el => el.style.display = 'none');
+    if (type === 'daily') document.querySelectorAll('.field-daily').forEach(el => el.style.display = '');
+    if (type === 'monthly') document.querySelectorAll('.field-monthly').forEach(el => el.style.display = '');
+    if (type === 'yearly') document.querySelectorAll('.field-yearly').forEach(el => el.style.display = '');
+    if (type === 'custom') document.querySelectorAll('.field-custom').forEach(el => el.style.display = '');
+}
+toggleFields();
+</script>
+{% endblock %}

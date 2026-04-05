@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Finance Dashboard{% endblock %}
+
+{% block content %}
+<h4 class="mb-4">Dashboard Overview</h4>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="text-muted small">Total Income</div>
+                <div class="stat-value text-success">${{ summary.total_income|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="text-muted small">Total Expense</div>
+                <div class="stat-value text-danger">${{ summary.total_expense|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="text-muted small">Net Balance</div>
+                <div class="stat-value text-primary">${{ summary.net_balance|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="text-muted small">Total Records</div>
+                <div class="stat-value">{{ summary.record_count }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown (Analyst + Admin) -->
+{% if category_breakdown %}
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="mb-3">Category Breakdown</h6>
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Category</th><th class="text-end">Total</th><th class="text-end">Count</th></tr></thead>
+                    <tbody>
+                    {% for item in category_breakdown %}
+                    <tr>
+                        <td>{{ item.category }}</td>
+                        <td class="text-end">${{ item.total|floatformat:2 }}</td>
+                        <td class="text-end">{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="mb-3">Monthly Trends</h6>
+                {% if monthly_trends %}
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Month</th><th class="text-end">Income</th><th class="text-end">Expense</th></tr></thead>
+                    <tbody>
+                    {% for item in monthly_trends %}
+                    <tr>
+                        <td>{{ item.month }}</td>
+                        <td class="text-end text-success">${{ item.income|floatformat:2 }}</td>
+                        <td class="text-end text-danger">${{ item.expense|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No trend data yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Records -->
+<div class="card stat-card">
+    <div class="card-body">
+        <h6 class="mb-3">Recent Records</h6>
+        {% if recent_records %}
+        <table class="table table-sm mb-0">
+            <thead><tr><th>Date</th><th>Type</th><th>Category</th><th class="text-end">Amount</th><th>Status</th></tr></thead>
+            <tbody>
+            {% for r in recent_records %}
+            <tr>
+                <td>{{ r.date }}</td>
+                <td><span class="badge badge-{{ r.record_type }}">{{ r.record_type }}</span></td>
+                <td>{{ r.category }}</td>
+                <td class="text-end">${{ r.amount|floatformat:2 }}</td>
+                <td>{{ r.status }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">No records yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

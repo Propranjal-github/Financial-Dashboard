@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Create User — Finance Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h4 class="mb-4">Create New User</h4>
+        <div class="card stat-card">
+            <div class="card-body">
+                {% if errors %}
+                <div class="alert alert-danger">
+                    <strong>Please fix the errors below:</strong>
+                    <ul class="mb-0 mt-1">
+                    {% for field, msgs in errors.items %}
+                        {% for msg in msgs %}
+                        <li><strong>{{ field }}:</strong> {{ msg }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               value="{{ form_data.username|default:'' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                               value="{{ form_data.email|default:'' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="viewer" {% if form_data.role == 'viewer' %}selected{% endif %}>Viewer</option>
+                            <option value="analyst" {% if form_data.role == 'analyst' %}selected{% endif %}>Analyst</option>
+                            <option value="admin" {% if form_data.role == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create User</button>
+                        <a href="{% url 'frontend:users' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

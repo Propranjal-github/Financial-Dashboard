@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Users — Finance Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">User Management</h4>
+    <a href="{% url 'frontend:user_create' %}" class="btn btn-primary btn-sm">+ New User</a>
+</div>
+
+<div class="card stat-card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                    <span class="badge bg-{% if u.role == 'admin' %}danger{% elif u.role == 'analyst' %}info{% else %}secondary{% endif %}">
+                        {{ u.get_role_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if u.is_active %}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ u.date_joined|date:"Y-m-d" }}</td>
+                <td>
+                    {% if u.pk != request.user.pk %}
+                    <form method="post" action="{% url 'frontend:user_delete' u.pk %}"
+                          onsubmit="return confirm('Delete user {{ u.username }}?');" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                    {% else %}
+                    <span class="text-muted small">You</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">No users found.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
