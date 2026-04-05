@@ -1,6 +1,7 @@
 # Finance Dashboard
 
 **Live Demo**: [https://financial-dashboard-i373.onrender.com](https://financial-dashboard-i373.onrender.com)
+**API Documentation**: [https://financial-dashboard-i373.onrender.com/api/docs/](https://financial-dashboard-i373.onrender.com/api/docs/)
 
 A Django + Django REST Framework backend for a multi-user finance dashboard system with JWT authentication, role-based access control, financial record management, dashboard analytics, and a minimal Django-based frontend for demonstration.
 
