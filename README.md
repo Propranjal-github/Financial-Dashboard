@@ -1,5 +1,7 @@
 # Finance Dashboard
 
+**Live Demo**: [https://financial-dashboard-i373.onrender.com](https://financial-dashboard-i373.onrender.com)
+
 A Django + Django REST Framework backend for a multi-user finance dashboard system with JWT authentication, role-based access control, financial record management, dashboard analytics, and a minimal Django-based frontend for demonstration.
 
 ## Tech Stack
@@ -9,13 +11,17 @@ A Django + Django REST Framework backend for a multi-user finance dashboard syst
 - **djangorestframework-simplejwt** — JWT authentication with token blacklisting
 - **django-filter** — queryset filtering
 - **Bootstrap 5** — frontend styling (via CDN)
-- **SQLite** — local development database
+- **Neon PostgreSQL** — remote production/development database
 
 ## Quick Start
 
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
+
+# 1.5 Setup Environment (Optional for local testing)
+# Create a .env file with DATABASE_URL to use PostgreSQL. 
+# If omitted, it will safely fall back to a local SQLite database!
 
 # 2. Run migrations
 python manage.py migrate
